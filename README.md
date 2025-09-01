@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # HealthyWealthy - 맞춤형 헬스케어 커머스 플랫폼
 
 <br>
