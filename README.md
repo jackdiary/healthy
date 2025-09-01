@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # HealthyWealthy - 맞춤형 헬스케어 커머스 플랫폼
 
 <br>
@@ -125,4 +126,5 @@
 - `GET /auth/kakao`: Kakao 소셜 로그인 요청
 - `GET /admin/users`: (관리자) 모든 사용자 정보 조회
 - `POST /admin/settings`: (관리자) 사이트 설정 업데이트
+
 
