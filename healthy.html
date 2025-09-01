@@ -1,0 +1,1917 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>HealthyWealthy - 빠르고 정확한 헬스케어 정보</title>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css"/>
+    </head>
+    <body>
+        <!-- 헤더 영역: 로고, 검색창, 네비게이션 메뉴 등을 포함 -->
+        <header class="header">
+            <div class="container">
+                <div class="logo">
+                    <img src="./image/34.png" alt="HealthyWealthy" class="logo-img">
+                    <span class="logo-text" id="siteLogoText">HealthyWealthy</span>
+                </div>
+                <!-- 접속자 수 박스 -->
+                <div id="visitor-counter" class="visitor-counter">
+                    <div class="visitor-icon">👥</div>
+                    <div class="visitor-info">
+                        <div class="visitor-label">현재 접속자</div>
+                        <div class="visitor-count" id="visitor-count">100,000,000</div>
+                    </div>
+                </div>
+                <div class="search-container">
+                    <form class="search-form" onsubmit="handleSearch(event)">
+                        <input type="text" class="search-input" placeholder="건강용품, 마사지기, 보조식품 검색..." id="search-input">
+                        <div class="search-icon"></div>
+                        <button type="submit" class="search-button">검색</button>
+                    </form> 
+                </div>
+                <nav class="nav">
+                    <ul class="nav-menu">
+                        <li class="nav-item"><a href="#" class="nav-link" data-sidebar="products">전체 상품</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" data-sidebar="events">이벤트</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" data-sidebar="board">게시판</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link" data-sidebar="support">고객센터</a></li>
+                    </ul>
+                </nav>
+                <!-- 로그인 영역 추가 -->
+                <div class="auth-section">
+                    <div id="logged-out-menu" class="auth-menu">
+                        <button class="auth-btn login-btn" onclick="openLoginModal()">로그인</button>
+                        <button class="auth-btn signup-btn" onclick="openSignupModal()">회원가입</button>
+                    </div>
+                    <div id="logged-in-menu" class="auth-menu" style="display: none;">
+                        <div class="user-info">
+                            <span id="user-name">사용자</span>님
+                            <button class="user-menu-btn" onclick="toggleUserMenu()">▼</button>
+                        </div>
+                        <div class="user-dropdown" id="user-dropdown">
+                            <a href="#" onclick="showMyPage()">마이페이지</a>
+                            <a href="#" onclick="showOrderHistory()">주문내역</a>
+                            <a href="#" onclick="showWishlist()">찜목록</a>
+                            <a href="#" onclick="logout()">로그아웃</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="mobile-menu-toggle"><span></span><span></span><span></span></div>
+            </div>
+        </header>
+
+        <!-- 로그인 모달 -->
+        <div class="modal-overlay" id="login-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>로그인</h2>
+                    <button class="modal-close" onclick="closeModal('login-modal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="login-form" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label for="login-email">이메일</label>
+                            <input type="email" id="login-email" required placeholder="이메일을 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">비밀번호</label>
+                            <input type="password" id="login-password" required placeholder="비밀번호를 입력하세요">
+                        </div>
+                        <div class="form-options">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="remember-me">
+                                <span>로그인 상태 유지</span>
+                            </label>
+                            <a href="#" onclick="showFindPassword()">비밀번호 찾기</a>
+                        </div>
+                        <button type="submit" class="submit-btn">로그인</button>
+                    </form>
+                    <div class="social-login">
+                        <p>소셜 로그인</p>
+                        <div class="social-buttons">
+                            <button class="social-btn kakao" onclick="loginWithKakao()">카카오 로그인</button>
+                            <button class="social-btn google" onclick="loginWithGoogle()">구글 로그인</button>
+                            <button class="social-btn naver" onclick="loginWithNaver()">네이버 로그인</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 회원가입 모달 -->
+        <div class="modal-overlay" id="signup-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>회원가입</h2>
+                    <button class="modal-close" onclick="closeModal('signup-modal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="signup-form" onsubmit="handleSignup(event)">
+                        <div class="form-group">
+                            <label for="signup-name">이름</label>
+                            <input type="text" id="signup-name" required placeholder="이름을 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-email">이메일</label>
+                            <input type="email" id="signup-email" required placeholder="이메일을 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password">비밀번호</label>
+                            <input type="password" id="signup-password" required placeholder="비밀번호를 입력하세요" minlength="8">
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password-confirm">비밀번호 확인</label>
+                            <input type="password" id="signup-password-confirm" required placeholder="비밀번호를 다시 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-phone">전화번호</label>
+                            <input type="tel" id="signup-phone" placeholder="010-0000-0000">
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-birth">생년월일</label>
+                            <input type="date" id="signup-birth">
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="agree-terms" required>
+                                <span>이용약관에 동의합니다</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="agree-privacy" required>
+                                <span>개인정보 처리방침에 동의합니다</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="agree-marketing">
+                                <span>마케팅 정보 수신에 동의합니다 (선택)</span>
+                            </label>
+                        </div>
+                        <button type="submit" class="submit-btn">회원가입</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 기존 사이드바들 그대로... -->
+        <div class="sidebar-overlay"></div>
+        <aside class="sidebar" id="products-sidebar">
+            <div class="sidebar-header">
+                <h3>전체 상품</h3><button class="sidebar-close">&times;</button>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" data-category="products-all">전체 상품</a></li>
+                <li><a href="#" data-category="products-featured">추천 상품</a></li>
+                <li><a href="#" data-category="products-massager">마사지기</a></li>
+                <li><a href="#" data-category="products-supplement">건강보조식품</a></li>
+            </ul>
+        </aside>
+        <aside class="sidebar" id="events-sidebar">
+            <div class="sidebar-header"><h3>이벤트</h3><button class="sidebar-close">&times;</button></div>
+            <ul class="sidebar-menu">
+                <li><a href="#" data-category="events-ongoing">진행중인 이벤트</a></li>
+                <li><a href="#" data-category="events-finished">종료된 이벤트</a></li>
+                <li><a href="#" data-category="events-upcoming">예정된 이벤트</a></li>
+            </ul>
+        </aside>
+        <aside class="sidebar" id="board-sidebar">
+            <div class="sidebar-header"><h3>게시판</h3><button class="sidebar-close">&times;</button></div>
+            <ul class="sidebar-menu">
+                <li><a href="#" data-category="board-reviews">상품 후기</a></li>
+                <li><a href="#" data-category="board-free">자유 게시판</a></li>
+                <li><a href="#" data-category="board-notices">공지사항</a></li>
+            </ul>
+        </aside>
+        <aside class="sidebar" id="support-sidebar">
+            <div class="sidebar-header"><h3>고객센터</h3><button class="sidebar-close">&times;</button></div>
+            <ul class="sidebar-menu">
+                <li><a href="#" data-category="support-qna">Q&amp;A</a></li>
+                <li><a href="#" data-category="support-one-on-one">1:1 문의</a></li>
+                <li><a href="#" data-category="support-feedback">오류 및 개선 제안</a></li>
+            </ul>
+        </aside>
+
+        <!-- 상세 목록 패널 (오른쪽에서 나오는 패널) -->
+        <div class="detail-panel" id="detail-panel">
+            <div class="detail-panel-header">
+                <button class="detail-panel-back-btn" id="detail-panel-back-btn">←</button>
+                <h3 id="detail-panel-title">상세 목록</h3>
+            </div>
+            <div class="detail-panel-content">
+                <div class="detail-panel-grid" id="detail-panel-grid"></div>
+            </div>
+        </div>
+
+        <!-- 자유게시판 패널 -->
+        <div class="board-panel" id="board-panel" style="display: none;">
+            <div class="board-panel-header">
+                <button class="board-panel-back-btn" id="board-panel-back-btn">←</button>
+                <h3 id="board-panel-title">자유게시판</h3>
+                <button class="write-post-btn" id="write-post-btn" onclick="openWritePostModal()">글쓰기</button>
+            </div>
+            <div class="board-panel-content">
+                <div class="board-list" id="board-list"></div>
+            </div>
+        </div>
+
+        <!-- 글쓰기 모달 -->
+        <div class="modal-overlay" id="write-post-modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>새 글 작성</h2>
+                    <button class="modal-close" onclick="closeModal('write-post-modal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="write-post-form" onsubmit="handleWritePost(event)">
+                        <div class="form-group">
+                            <label for="post-title">제목</label>
+                            <input type="text" id="post-title" required placeholder="제목을 입력하세요" maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="post-content">내용</label>
+                            <textarea id="post-content" required placeholder="내용을 입력하세요" rows="10"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="cancel-btn" onclick="closeModal('write-post-modal')">취소</button>
+                            <button type="submit" class="submit-btn">작성 완료</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <main class="main">
+            <!-- 히어로 섹션: 배경 슬라이드쇼, 안내 텍스트, 신체 부위 선택 UI -->
+            <section class="hero">
+                <div class="hero-background"></div>
+                <div class="container">
+                    <div class="hero-content">
+                        <h1 class="hero-title" id="mainPageTitle">빠르고 정확한 헬스케어 정보</h1>
+                        <p class="hero-subtitle" id="mainPageSubtitle">당신의 건강한 라이프스타일을 위한 맞춤형 솔루션</p>
+                    </div>
+                    <div class="hero-main">
+                        <div class="body-model-section" id="body-model-section">
+                            <div class="human-model-container">
+                                <div class="human-model">
+                                    <div class="user-guide">
+                                        <h3>신체 부위를 클릭해보세요!</h3>
+                                        <p>부위별 맞춤형 상품을 추천해드립니다!</p>
+                                    </div>
+                                    <div class="body-parts-stack">
+                                        <div class="body-part-item" data-part="head"><img src="./image/머리.png" alt="머리" class="body-part-image"><div class="body-part-overlay"><div class="body-part-label">머리</div></div></div>
+                                        <div class="body-part-item" data-part="shoulders"><img src="./image/어깨.png" alt="어깨" class="body-part-image"><div class="body-part-overlay"><div class="body-part-label">어깨</div></div></div>
+                                        <div class="body-part-item" data-part="chest"><img src="./image/가슴.png" alt="가슴" class="body-part-image"><div class="body-part-overlay"><div class="body-part-label">가슴</div></div></div>
+                                        <div class="body-part-item" data-part="abdomen"><img src="./image/복부.png" alt="복부" class="body-part-image"><div class="body-part-overlay"><div class="body-part-label">복부</div></div></div>
+                                        <div class="body-part-item" data-part="hands"><img src="./image/손.png" alt="손" class="body-part-image"><div class="body-part-overlay"><div class="body-part-label">손</div></div></div>
+                                        <div class="body-part-item" data-part="thighs"><img src="./image/허벅지.png" alt="허벅지" class="body-part-image"><div class="body-part-overlay"><div class="body-part-label">허벅지</div></div></div>
+                                        <div class="body-part-item" data-part="knees"><img src="./image/무릎.png" alt="무릎" class="body-part-image"><div class="body-part-overlay"><div class="body-part-label">무릎</div></div></div>
+                                        <div class="body-part-item" data-part="feet"><img src="./image/발.png" alt="발" class="body-part-image"><div class="body-part-overlay"><div class="body-part-label">발</div></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="recommendations-section" id="recommendations-section">
+                            <div class="recommendations-content">
+                                <div class="recommendations-header">
+                                    <button class="recommendations-close" onclick="closeRecommendations()">&times;</button>
+                                    <h3 class="recommendations-title" id="recommendations-title">추천 상품</h3>
+                                </div>
+                                <div class="filter-tabs">
+                                    <button class="filter-tab active" data-filter="all">전체</button>
+                                    <button class="filter-tab" data-filter="마사지기">마사지기</button>
+                                    <button class="filter-tab" data-filter="건강보조식품">건강보조식품</button>
+                                </div>
+                                <div class="recommendations-grid" id="recommendations-grid"></div>
+                                <div class="pagination-controls" id="recommendations-pagination">
+                                    <button id="prev-page" class="pagination-btn" disabled>이전</button>
+                                    <span id="page-info">1 / 1</span>
+                                    <button id="next-page" class="pagination-btn" disabled>다음</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 푸터: 사이트 정보 및 연락처 -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-info"><h3>HealthyWealthy</h3><p>빠르고 정확한 헬스케어 정보</p></div>
+                    <div class="footer-contact"><h4>연락처</h4><p>MegaNext, 삼성동, 강남구, 서울</p><p>전화: 070-2222-2222</p><p>이메일: Healthy@wealthy.com</p></div>
+                </div>
+                <div class="footer-bottom"><p>© 2025 HealthyWealthy. All rights reserved.</p></div>
+            </div>
+        </footer>
+
+        <!-- 검색 결과 패널 (검색 시 나타나는 오버레이) -->
+        <div class="search-results-panel" id="search-results-panel">
+            <div class="search-results-content">
+                <div class="search-results-header">
+                    <h3 class="search-results-title" id="search-results-title">검색 결과</h3>
+                    <button class="search-results-close-btn" id="search-results-close-btn">&times;</button>
+                </div>
+                <div class="search-results-grid" id="search-results-grid"></div>
+            </div>
+        </div>
+
+        <script>
+            // ========== 접속자 수 카운터 로직 ========== 
+            let visitorCount = Math.floor(Math.random() * 10000000) + 100000000; // 1억 ~ 1억 1천만 범위에서 시작
+            let visitorCountInterval = null;
+            function updateVisitorCount() {
+                try {
+                    // 1초마다 1~100명 사이의 랜덤한 수만큼 증감 (증가 70%, 감소 30% 확률)
+                    const change = Math.floor(Math.random() * 100) + 1; // 1~100
+                    const isIncrease = Math.random() < 0.7; // 70% 확률로 증가
+                    
+                    if (isIncrease) {
+                        visitorCount += change;
+                    } else {
+                        // 감소할 때는 1억 이하로 내려가지 않도록 제한
+                        visitorCount = Math.max(100000000, visitorCount - change);
+                    }
+                    
+                    // 요소가 존재하는지 확인 후 업데이트
+                    const countElement = document.getElementById('visitor-count');
+                    if (countElement) {
+                        countElement.textContent = visitorCount.toLocaleString();
+                        console.log('접속자 수 업데이트:', visitorCount.toLocaleString()); // 디버깅용
+                    } else {
+                        console.error('visitor-count 요소를 찾을 수 없습니다.');
+                    }
+                } catch (error) {
+                    console.error('접속자 수 업데이트 오류:', error);
+                }
+            }
+
+            // 접속자 수 카운터 시작
+            function startVisitorCounter() {
+                // 기존 인터벌이 있다면 제거
+                if (visitorCountInterval) {
+                    clearInterval(visitorCountInterval);
+                }
+                
+                // 초기 표시
+                updateVisitorCount();
+                
+                // 1초마다 업데이트
+                visitorCountInterval = setInterval(updateVisitorCount, 1000);
+                console.log('접속자 수 카운터 시작됨');
+            }
+
+            // 기존 변수들
+            let selectedPart = null;
+            let currentFilter = 'all';
+            let allProducts = [];
+
+            // 페이지네이션 변수들
+            let productsPerPage = 4; // 페이지당 상품 수
+            let currentRecommendationPage = 1; // 현재 추천 상품 페이지
+            let currentFilteredProducts = []; // 현재 필터링된 전체 추천 상품 목록
+
+            // 로그인 관련 변수들 추가
+            let currentUser = null;
+            let isLoggedIn = false;
+
+            // 상품 외 데이터 (이벤트, 게시판 글 등) 미리 정의
+            const nonProductData = {
+                'events-ongoing': [ { type: 'event', title: '여름맞이 쿨링 마사지기 할인', date: '2025.08.01 ~ 2025.08.31', description: '인기 쿨링 마사지기 제품을 최대 30% 할인된 가격으로 만나보세요.' } ],
+                'events-finished': [ { type: 'event', title: '가정의 달 특별 기획전', date: '2025.05.01 ~ 2025.05.31', description: '부모님을 위한 효도 상품 특별 할인 이벤트가 종료되었습니다.' } ],
+                'events-upcoming': [ { type: 'event', title: '추석맞이 건강 선물세트 예약 판매', date: '2025.09.01 예정', description: '소중한 분들께 건강을 선물하세요. 곧 예약 판매가 시작됩니다.' } ],
+                'board-reviews': [ { type: 'post', title: '목 마사지기 정말 시원하네요!', author: '김민준', description: '컴퓨터 앞에 오래 앉아있어서 목이 항상 뻐근했는데, 정말 만족합니다.' } ],
+                'board-free': [ { type: 'post', title: '다들 어떤 영양제 드시나요?', author: '박서연', description: '요즘 피로가 잘 안 풀리는데, 추천해주실 만한 영양제 있을까요?' } ],
+                'board-notices': [ { type: 'post', title: '시스템 점검 안내 (08/25 02:00 ~ 04:00)', author: '관리자', description: '보다 나은 서비스 제공을 위해 시스템 점검을 실시합니다. 이용에 참고 부탁드립니다.' } ],
+                'support-qna': [ 
+                    { type: 'post', title: '배송은 보통 얼마나 걸리나요?', author: '자주 묻는 질문', description: '평일 오후 2시 이전 주문 건은 당일 출고되며, 보통 1~3일 이내에 수령 가능합니다.' }, 
+                    { type: 'post', title: 'A/S 정책은 어떻게 되나요?', author: '자주 묻는 질문', description: '구매 후 1년간 무상 A/S를 보증합니다. 자세한 내용은 고객센터로 문의해주세요.' } 
+                ],
+                'support-one-on-one': [],
+                'support-feedback': []
+            };
+
+            // 페이지가 모두 로드된 후 실행
+            document.addEventListener('DOMContentLoaded', async function() {
+                console.log('DOM 로딩 완료');
+                console.log('현재 URL:', window.location.href);
+                
+                // 카카오 로그인 콜백 처리
+                handleKakaoLoginCallback();
+                
+                // 접속자 수 카운터 시작
+                setTimeout(startVisitorCounter, 100); // 약간의 지연 후 시작
+                
+                // 로그인 상태 확인
+                checkLoginStatus();
+                
+                try {
+                    console.log('products.json 로딩 시도...');
+                    const response = await fetch('products.json');
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    allProducts = await response.json();
+                    console.log('상품 데이터 로드 성공:', allProducts.length + '개 상품');
+                    console.log('첫 번째 상품:', allProducts[0]);
+                    console.log('Loaded allProducts:', allProducts);
+                    initializePage();
+                    console.log('페이지 초기화 완료');
+                } catch (error) {
+                    console.error("products.json 파일을 불러오는 데 실패했습니다:", error);
+                    console.error("Error details:", error.message);
+                    alert("상품 데이터를 불러오는 데 실패했습니다. 파일 경로와 JSON 형식을 확인해주세요.\n\n(Tip: VS Code의 'Live Server' 확장 프로그램을 사용하면 파일 경로 문제를 쉽게 해결할 수 있습니다.)");
+                }
+            });
+            
+            // window.onload로도 한 번 더 실행 (완전히 안전하게)
+            window.addEventListener('load', function() {
+                console.log('Window 로딩 완료');
+                if (!visitorCountInterval) {
+                    startVisitorCounter();
+                }
+            });
+
+            // Apply admin settings from localStorage (using siteSettings object)
+            (function() {
+                const mainPageTitleElement = document.getElementById('mainPageTitle');
+                const mainPageSubtitleElement = document.getElementById('mainPageSubtitle'); // New
+                const siteLogoTextElement = document.getElementById('siteLogoText'); // New
+                const savedSiteSettingsJSON = localStorage.getItem('siteSettings');
+
+                if (savedSiteSettingsJSON) {
+                    try {
+                        const siteSettings = JSON.parse(savedSiteSettingsJSON);
+
+                        // Apply heroTitle
+                        if (siteSettings.heroTitle && mainPageTitleElement) {
+                            mainPageTitleElement.textContent = siteSettings.heroTitle;
+                        }
+
+                        // Apply heroSubtitle (New)
+                        if (siteSettings.heroSubtitle && mainPageSubtitleElement) {
+                            mainPageSubtitleElement.textContent = siteSettings.heroSubtitle;
+                        }
+
+                        // Apply siteTitle (New - to logo text and document title)
+                        if (siteSettings.siteTitle) {
+                            document.title = siteSettings.siteTitle; // Browser tab title
+                            if (siteLogoTextElement) {
+                                siteLogoTextElement.textContent = siteSettings.siteTitle; // Visible logo text
+                            }
+                        }
+
+                        // Apply backgroundColor
+                        if (siteSettings.backgroundColor) {
+                            document.body.style.backgroundColor = siteSettings.backgroundColor;
+                        }
+                        // Note: primaryColor, secondaryColor, textColor would require more complex CSS manipulation
+                        // or dynamic style tag injection, which is beyond simple text/background changes.
+                        // For now, only heroTitle, heroSubtitle, siteTitle, backgroundColor are handled.
+
+                    } catch (e) {
+                        console.error("Error parsing siteSettings from localStorage:", e);
+                    }
+                }
+            })();
+
+            // 페이지네이션 버튼 이벤트 리스너
+            document.addEventListener('DOMContentLoaded', () => {
+                const prevBtn = document.getElementById('prev-page');
+                const nextBtn = document.getElementById('next-page');
+
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', () => {
+                        if (currentRecommendationPage > 1) {
+                            currentRecommendationPage--;
+                            renderRecommendationsPage();
+                            updatePaginationControls();
+                        }
+                    });
+                }
+
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', () => {
+                        const totalPages = Math.ceil(currentFilteredProducts.length / productsPerPage);
+                        if (currentRecommendationPage < totalPages) {
+                            currentRecommendationPage++;
+                            renderRecommendationsPage();
+                            updatePaginationControls();
+                        }
+                    });
+                }
+            });
+
+            // ================== 로그인 기능 함수들 ==================
+            
+            // 소셜 로그인 콜백 처리 (카카오 + 구글)
+            function handleKakaoLoginCallback() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const kakaoLogin = urlParams.get('kakao_login');
+                const googleLogin = urlParams.get('google_login');
+                const userData64 = urlParams.get('user');
+                const token = urlParams.get('token');
+                const error = urlParams.get('error');
+                
+                if (error) {
+                    console.error('소셜 로그인 오류:', error);
+                    let errorMessage = '소셜 로그인 중 오류가 발생했습니다.';
+                    
+                    switch (error) {
+                        case 'kakao_auth_failed':
+                            errorMessage = '카카오 인증에 실패했습니다.';
+                            break;
+                        case 'google_auth_failed':
+                            errorMessage = '구글 인증에 실패했습니다.';
+                            break;
+                        case 'no_auth_code':
+                            errorMessage = '인증 코드를 받지 못했습니다.';
+                            break;
+                        case 'kakao_login_failed':
+                            errorMessage = '카카오 로그인 처리 중 오류가 발생했습니다.';
+                            break;
+                        case 'google_login_failed':
+                            errorMessage = '구글 로그인 처리 중 오류가 발생했습니다.';
+                            break;
+                    }
+                    
+                    alert(errorMessage);
+                    // URL 파라미터 정리
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    return;
+                }
+                
+                // 카카오 또는 구글 로그인 성공 처리
+                if ((kakaoLogin === 'success' || googleLogin === 'success') && userData64) {
+                    try {
+                        // Base64로 인코딩된 사용자 데이터 디코딩
+                        const userData = JSON.parse(atob(decodeURIComponent(userData64)));
+                        
+                        // 토큰이 있으면 저장
+                        if (token) {
+                            localStorage.setItem('authToken', token);
+                        }
+                        
+                        // 사용자 로그인 처리
+                        loginUser(userData);
+                        
+                        // 성공 메시지
+                        const provider = userData.provider === 'kakao' ? '카카오' : '구글';
+                        alert(`환영합니다, ${userData.name}님! ${provider} 로그인에 성공했습니다.`);
+                        
+                        // URL 파라미터 정리
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        
+                    } catch (error) {
+                        console.error('소셜 로그인 데이터 처리 오류:', error);
+                        alert('소셜 로그인 데이터 처리 중 오류가 발생했습니다.');
+                    }
+                }
+            }
+
+            // 로그인 상태 확인
+            function checkLoginStatus() {
+                const userData = JSON.parse(localStorage.getItem('currentUser') || 'null');
+                const rememberMe = localStorage.getItem('rememberLogin') === 'true';
+                
+                if (userData && rememberMe) {
+                    loginUser(userData);
+                }
+            }
+
+            // 로그인 처리
+            function loginUser(userData) {
+                currentUser = userData;
+                isLoggedIn = true;
+                
+                // UI 업데이트
+                document.getElementById('logged-out-menu').style.display = 'none';
+                document.getElementById('logged-in-menu').style.display = 'block';
+                document.getElementById('user-name').textContent = userData.name || userData.email.split('@')[0];
+                
+                // 사용자 데이터 저장
+                localStorage.setItem('currentUser', JSON.stringify(userData));
+                
+                console.log('로그인 성공:', userData);
+            }
+
+            // 로그아웃 처리
+            async function logout() {
+                // 소셜 로그인 로그아웃 처리
+                if (currentUser && (currentUser.provider === 'kakao' || currentUser.provider === 'google')) {
+                    try {
+                        const token = localStorage.getItem('authToken');
+                        if (token) {
+                            const logoutUrl = currentUser.provider === 'kakao' ? '/auth/kakao/logout' : '/auth/google/logout';
+                            await fetch(logoutUrl, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            });
+                        }
+                    } catch (error) {
+                        console.log(`${currentUser.provider} 로그아웃 API 호출 실패:`, error);
+                    }
+                }
+                
+                currentUser = null;
+                isLoggedIn = false;
+                
+                // UI 업데이트
+                document.getElementById('logged-out-menu').style.display = 'block';
+                document.getElementById('logged-in-menu').style.display = 'none';
+                
+                // 사용자 드롭다운 닫기
+                document.getElementById('user-dropdown').style.display = 'none';
+                
+                // 로컬 스토리지 정리
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('rememberLogin');
+                localStorage.removeItem('authToken');
+                
+                alert('로그아웃되었습니다.');
+            }
+
+            // 모달 열기
+            function openLoginModal() {
+                document.getElementById('login-modal').style.display = 'flex';
+            }
+
+            function openSignupModal() {
+                document.getElementById('signup-modal').style.display = 'flex';
+            }
+
+            // 모달 닫기
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+            }
+
+            // 사용자 메뉴 토글
+            function toggleUserMenu() {
+                const dropdown = document.getElementById('user-dropdown');
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            }
+
+            // 로그인 폼 처리
+            async function handleLogin(event) {
+                event.preventDefault();
+                
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                const rememberMe = document.getElementById('remember-me').checked;
+                
+                if (email && password) {
+                    try {
+                        // 서버 API를 통한 로그인 인증
+                        const response = await fetch('/api/login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ email, password })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            loginUser(result.user);
+                            if (rememberMe) {
+                                localStorage.setItem('rememberLogin', 'true');
+                            }
+                            closeModal('login-modal');
+                            alert(`환영합니다, ${result.user.name}님!`);
+                        } else {
+                            alert(result.message);
+                        }
+                        
+                    } catch (error) {
+                        console.error('로그인 처리 중 오류 발생:', error);
+                        // 서버 연결 실패시 localStorage에서 시도 (백업)
+                        try {
+                            const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                            const user = users.find(u => u.email === email && u.password === password);
+                            
+                            if (user) {
+                                loginUser(user);
+                                if (rememberMe) {
+                                    localStorage.setItem('rememberLogin', 'true');
+                                }
+                                closeModal('login-modal');
+                                alert(`환영합니다, ${user.name}님! (오프라인 모드)`);
+                            } else {
+                                alert('이메일 또는 비밀번호가 올바르지 않습니다.');
+                            }
+                        } catch (localError) {
+                            alert('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
+                        }
+                    }
+                }
+            }
+
+            // 회원가입 폼 처리
+            async function handleSignup(event) {
+                event.preventDefault();
+                
+                const name = document.getElementById('signup-name').value;
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                const passwordConfirm = document.getElementById('signup-password-confirm').value;
+                const phone = document.getElementById('signup-phone').value;
+                const birth = document.getElementById('signup-birth').value;
+                const agreeTerms = document.getElementById('agree-terms').checked;
+                const agreePrivacy = document.getElementById('agree-privacy').checked;
+                const agreeMarketing = document.getElementById('agree-marketing').checked;
+                
+                // 유효성 검사
+                if (password !== passwordConfirm) {
+                    alert('비밀번호가 일치하지 않습니다.');
+                    return;
+                }
+                
+                if (!agreeTerms || !agreePrivacy) {
+                    alert('필수 약관에 동의해주세요.');
+                    return;
+                }
+                
+                try {
+                    // 새 회원 정보 생성
+                    const newUser = {
+                        id: Date.now().toString(),
+                        name,
+                        email,
+                        password,
+                        phone,
+                        birth,
+                        agreeMarketing,
+                        joinDate: new Date().toISOString()
+                    };
+                    
+                    // 기존 localStorage에서 회원 데이터 로드 (중복 체크용)
+                    const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+                    
+                    // 중복 이메일 체크
+                    if (existingUsers.find(u => u.email === email)) {
+                        alert('이미 가입된 이메일입니다.');
+                        return;
+                    }
+                    
+                    // 회원 데이터 저장 (localStorage + 서버 백업)
+                    existingUsers.push(newUser);
+                    localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
+                    
+                    // 서버 API 호출 시도 (백그라운드에서)
+                    try {
+                        const response = await fetch('/api/signup', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(newUser)
+                        });
+                        
+                        const result = await response.json();
+                        console.log('서버 저장 결과:', result);
+                        
+                    } catch (serverError) {
+                        console.log('서버 연결 실패 - 로컬 저장만 완료:', serverError);
+                    }
+                    
+                    closeModal('signup-modal');
+                    alert('회원가입이 완료되었습니다! 로그인해주세요.');
+                    
+                    // 회원가입 후 로그인 모달 열기
+                    setTimeout(() => {
+                        openLoginModal();
+                        // 가입한 이메일 자동 입력
+                        document.getElementById('login-email').value = email;
+                    }, 100);
+                    
+                } catch (error) {
+                    console.error('회원가입 처리 중 예외 발생:', error);
+                    alert('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
+                }
+            }
+
+            // 카카오 로그인 (실제 API 연동)
+            function loginWithKakao() {
+                try {
+                    // 서버의 카카오 인증 URL로 리다이렉트
+                    window.location.href = '/auth/kakao';
+                } catch (error) {
+                    console.error('카카오 로그인 오류:', error);
+                    alert('카카오 로그인 중 오류가 발생했습니다.');
+                }
+            }
+
+            // 구글 로그인 (실제 API 연동)
+            function loginWithGoogle() {
+                try {
+                    // 서버의 구글 인증 URL로 리다이렉트
+                    window.location.href = '/auth/google';
+                } catch (error) {
+                    console.error('구글 로그인 오류:', error);
+                    alert('구글 로그인 중 오류가 발생했습니다.');
+                }
+            }
+
+            function loginWithNaver() {
+                const userData = {
+                    id: 'naver_' + Date.now(),
+                    name: '네이버사용자',
+                    email: 'naver@example.com',
+                    provider: 'naver'
+                };
+                loginUser(userData);
+                closeModal('login-modal');
+                alert('네이버 로그인 성공!');
+            }
+
+            // 마이페이지 표시
+            function showMyPage() {
+                if (!isLoggedIn) {
+                    openLoginModal();
+                    return;
+                }
+                alert('마이페이지 기능은 준비 중입니다.');
+                document.getElementById('user-dropdown').style.display = 'none';
+            }
+
+            // 주문내역 표시
+            function showOrderHistory() {
+                if (!isLoggedIn) {
+                    openLoginModal();
+                    return;
+                }
+                alert('주문내역 기능은 준비 중입니다.');
+                document.getElementById('user-dropdown').style.display = 'none';
+            }
+
+            // 찜목록 표시
+            function showWishlist() {
+                if (!isLoggedIn) {
+                    openLoginModal();
+                    return;
+                }
+                alert('찜목록 기능은 준비 중입니다.');
+                document.getElementById('user-dropdown').style.display = 'none';
+            }
+
+            // 비밀번호 찾기
+            function showFindPassword() {
+                alert('비밀번호 찾기 기능은 준비 중입니다.');
+            }
+
+            // 모달 외부 클릭시 닫기
+            document.addEventListener('click', function(event) {
+                if (event.target.classList.contains('modal-overlay')) {
+                    event.target.style.display = 'none';
+                }
+                
+                // 사용자 드롭다운 외부 클릭시 닫기
+                if (!event.target.closest('.auth-section')) {
+                    document.getElementById('user-dropdown').style.display = 'none';
+                }
+            });
+
+            // ================== 기존 기능 함수들 ==================
+            
+            // 페이지 초기 설정: 각종 기능 초기화 호출
+            function initializePage() {
+                console.log('페이지 초기화 시작...');
+                try {
+                    console.log('네비게이션 초기화...');
+                    initNavigation();
+                    console.log('신체 모델 초기화...');
+                    initHumanModel();
+                    console.log('필터 탭 초기화...');
+                    initFilterTabs();
+                    console.log('모바일 메뉴 초기화...');
+                    initMobileMenu();
+                    console.log('상세 패널 초기화...');
+                    initDetailPanel();
+                    console.log('검색 기능 초기화...');
+                    initSearch();
+                    console.log('모든 초기화 완료!');
+                } catch (error) {
+                    console.error('초기화 중 오류 발생:', error);
+                }
+            }
+
+            // 네비게이션 메뉴 초기화: 사이드바 연동 및 오버레이 처리
+            function initNavigation() {
+                const navLinks = document.querySelectorAll('.nav-link');
+                const sidebars = document.querySelectorAll('.sidebar');
+                const overlay = document.querySelector('.sidebar-overlay');
+                const closeBtns = document.querySelectorAll('.sidebar-close');
+                
+                // 네비게이션 링크 클릭 시 해당 사이드바 열기
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        openSidebar(this.getAttribute('data-sidebar') + '-sidebar');
+                    });
+                });
+
+                // 사이드바 닫기 버튼 및 오버레이 클릭 시 모든 사이드바 닫기
+                closeBtns.forEach(btn => btn.addEventListener('click', closeAllSidebars));
+                overlay.addEventListener('click', closeAllSidebars);
+
+                // 주어진 ID의 사이드바 열고 오버레이 표시
+                function openSidebar(sidebarId) {
+                    const targetSidebar = document.getElementById(sidebarId);
+                    if (targetSidebar) {
+                        targetSidebar.classList.add('active');
+                        overlay.classList.add('active');
+                    }
+                }
+
+                // 모든 사이드바와 오버레이를 닫기
+                function closeAllSidebars() {
+                    sidebars.forEach(sidebar => sidebar.classList.remove('active'));
+                    overlay.classList.remove('active');
+                }
+            }
+
+            // 모바일 메뉴 토글 초기화: 햄버거 버튼 클릭 시 메뉴 표시/숨김
+            function initMobileMenu() {
+                const toggle = document.querySelector('.mobile-menu-toggle');
+                const navMenu = document.querySelector('.nav-menu');
+                if (toggle) {
+                    toggle.addEventListener('click', function() {
+                        navMenu.classList.toggle('active'); // 모바일 메뉴 표시/숨김 토글
+                        this.classList.toggle('active');
+                    });
+                }
+            }
+
+            // 신체 모형 상호작용 초기화: 각 신체 부위에 클릭 이벤트 연결
+            function initHumanModel() {
+                const bodyParts = document.querySelectorAll('.body-part-item');
+                console.log('신체 부위 요소 개수:', bodyParts.length);
+                
+                bodyParts.forEach((part, index) => {
+                    console.log(`신체 부위 ${index + 1}:`, part.getAttribute('data-part'));
+                    part.addEventListener('click', function() { 
+                        console.log('신체 부위 클릭됨:', this.getAttribute('data-part'));
+                        selectBodyPart(this); 
+                    });
+                });
+            }
+
+            // 신체 부위 선택 시 호출: 이전 선택 해제, 신규 선택 표시 및 추천 섹션 표시
+            function selectBodyPart(part) {
+                console.log('selectBodyPart 함수 호출됨, part:', part.getAttribute('data-part'));
+                
+                if (selectedPart) {
+                    console.log('이전 선택 해제:', selectedPart.getAttribute('data-part'));
+                    selectedPart.classList.remove('selected');
+                }
+                
+                console.log('새로운 부위 선택:', part.getAttribute('data-part'));
+                part.classList.add('selected', 'pulse'); // 선택된 항목에 강조 스타일 및 펄스 애니메이션 클래스 추가
+                selectedPart = part;
+                setTimeout(() => {
+                    console.log('펄스 애니메이션 제거');
+                    part.classList.remove('pulse');
+                }, 600); // 잠시 후 펄스 클래스 제거 (애니메이션 1회 수행)
+                
+                console.log('추천 섹션 표시 시작...');
+                showRecommendations(part.getAttribute('data-part')); // 해당 부위에 대한 추천 상품 표시
+            }
+
+            // 추천 섹션 열기: 신체 모형 섹션 슬라이드아웃, 추천 섹션 표시, 제목 설정
+            function showRecommendations(partName) {
+                const bodySection = document.getElementById('body-model-section');
+                const recommendationsSection = document.getElementById('recommendations-section');
+                const title = document.getElementById('recommendations-title');
+                
+                bodySection.classList.add('slide-mode'); // 신체 모델 섹션을 축소하여 왼쪽으로 이동
+                recommendationsSection.classList.add('active'); // 추천 섹션 표시
+                
+                const partNames = { 'head': '머리', 'shoulders': '어깨', 'chest': '가슴', 'abdomen': '복부', 'hands': '손', 'thighs': '허벅지', 'knees': '무릎', 'feet': '발' };
+                title.textContent = `${partNames[partName] || partName} 관련 추천 상품`;
+                loadRecommendations(partName);
+            }
+
+            // 추천 상품 목록을 해당 신체 부위 및 현재 필터에 따라 로드하여 표시
+            function loadRecommendations(partName) {
+                const recommendations = getProductsByPart(partName);
+                
+                // 필터 조건에 따라 (전체 또는 특정 카테고리) 추천 목록 필터링
+                currentFilteredProducts = currentFilter === 'all' 
+                    ? recommendations 
+                    : recommendations.filter(p => p.category === currentFilter);
+
+                // 페이지네이션 초기화 및 현재 페이지 렌더링
+                currentRecommendationPage = 1; // 항상 첫 페이지부터 시작
+                renderRecommendationsPage();
+                updatePaginationControls();
+            }
+
+            // 현재 페이지의 추천 상품을 렌더링
+            function renderRecommendationsPage() {
+                const grid = document.getElementById('recommendations-grid');
+                grid.innerHTML = ''; // 기존 상품 제거
+
+                const startIndex = (currentRecommendationPage - 1) * productsPerPage;
+                const endIndex = startIndex + productsPerPage;
+                const productsToDisplay = currentFilteredProducts.slice(startIndex, endIndex);
+
+                if (productsToDisplay.length > 0) {
+                    productsToDisplay.forEach((product, index) => {
+                        const card = createRecommendationCard(product);
+                        grid.appendChild(card);
+                        setTimeout(() => card.classList.add('show'), index * 100); // 순차적으로 카드에 show 클래스 붙여 등장 효과
+                    });
+                } else {
+                    grid.innerHTML = `<p style="color:#777; grid-column: 1 / -1; text-align: center;">추천 상품이 없습니다.</p>`;
+                }
+            }
+
+            // 페이지네이션 컨트롤 업데이트
+            function updatePaginationControls() {
+                const prevBtn = document.getElementById('prev-page');
+                const nextBtn = document.getElementById('next-page');
+                const pageInfo = document.getElementById('page-info');
+
+                const totalPages = Math.ceil(currentFilteredProducts.length / productsPerPage);
+                totalRecommendationPages = totalPages === 0 ? 1 : totalPages; // 최소 1페이지
+
+                pageInfo.textContent = `${currentRecommendationPage} / ${totalRecommendationPages}`;
+
+                prevBtn.disabled = currentRecommendationPage === 1;
+                nextBtn.disabled = currentRecommendationPage === totalRecommendationPages;
+            }
+
+            // 주어진 신체 부위(영어)에 해당하는 한글 part 값으로 상품 목록 필터링
+            function getProductsByPart(partName) {
+                const partMap = { 'head': '머리', 'shoulders': '어깨', 'chest': '가슴', 'abdomen': '복부', 'hands': '손', 'thighs': '허벅지', 'knees': '무릎', 'feet': '발' };
+                const koreanPartName = partMap[partName];
+                return allProducts.filter(p => p.part === koreanPartName);
+            }
+
+            // 추천 상품 카드 DOM 요소 생성
+            function createRecommendationCard(product) {
+                const card = document.createElement('div');
+                card.className = 'recommendation-card';
+                card.style.cursor = 'pointer';
+                card.onclick = () => goToProductDetail(product.id);
+                
+                card.innerHTML = `
+                    <div class="recommendation-info">
+                        <h4 class="recommendation-title">${product.title}</h4>
+                        <p class="recommendation-description">${product.description}</p>
+                        <p class="recommendation-brand">${product.brand || ''}</p>
+                    </div>
+                    <div class="recommendation-price">${parseInt(product.price).toLocaleString()}원</div>
+                    <div class="recommendation-actions">
+                        <button class="recommendation-button primary" onclick="event.stopPropagation(); goToProductDetail('${product.id}')">
+                            상세보기
+                        </button>
+                        <button class="recommendation-button secondary" onclick="event.stopPropagation(); addToWishlist('${product.id}')">
+                            찜하기
+                        </button>
+                    </div>
+                `;
+                return card;
+            }
+
+            // 추천 상품 필터 탭 초기화: 탭 클릭 시 필터 변경 및 리스트 업데이트
+            function initFilterTabs() {
+                const tabs = document.querySelectorAll('.filter-tab');
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        tabs.forEach(t => t.classList.remove('active'));
+                        this.classList.add('active');
+                        currentFilter = this.getAttribute('data-filter');
+                        if (selectedPart) loadRecommendations(selectedPart.getAttribute('data-part'));
+                    });
+                });
+            }
+
+            // 추천 섹션 닫기: 신체 모형 섹션 원상태, 추천 섹션 숨김, 선택 상태 해제
+            function closeRecommendations() {
+                document.getElementById('body-model-section').classList.remove('slide-mode');
+                document.getElementById('recommendations-section').classList.remove('active');
+                if (selectedPart) {
+                    selectedPart.classList.remove('selected');
+                    selectedPart = null;
+                }
+            }
+            
+            // 상세 패널 초기화: 사이드바 링크 클릭 시 상세 패널 열기, 뒤로가기 버튼 설정
+            function initDetailPanel() {
+                const allSidebarLinks = document.querySelectorAll('.sidebar .sidebar-menu a');
+                const panel = document.getElementById('detail-panel');
+                const backBtn = document.getElementById('detail-panel-back-btn');
+
+                // 모든 사이드바 메뉴 링크 클릭 시 상세 패널 열기
+                allSidebarLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        openDetailPanel(link.dataset.category, link.textContent);
+                    });
+                });
+
+                // 상세 패널 뒤로가기 버튼 클릭 시 패널 닫기
+                backBtn.addEventListener('click', () => panel.classList.remove('active'));
+                
+                // 상세 패널 열기: 카테고리별 내용 표시
+                function openDetailPanel(category, categoryName) {
+                    // 자유게시판의 경우 별도 함수 호출
+                    if (category === 'board-free') {
+                        showFreeBoard();
+                        return;
+                    }
+                    
+                    const panelTitle = document.getElementById('detail-panel-title');
+                    const panelGrid = document.getElementById('detail-panel-grid');
+                    panelTitle.textContent = categoryName;
+                    panelGrid.innerHTML = '';
+
+                    let items = [];
+                    if (category.startsWith('products')) {
+                        // 상품 관련 카테고리 처리
+                        if (category === 'products-all') {
+                            items = allProducts;
+                        } else if (category === 'products-featured') {
+                            // 추천 상품: 가격 150,000원 이상인 제품 (예시 기준)
+                            items = allProducts.filter(p => parseInt(p.price) >= 150000);
+                        } else if (category === 'products-massager') {
+                            items = allProducts.filter(p => p.category === '마사지기');
+                        } else if (category === 'products-supplement') {
+                            items = allProducts.filter(p => p.category === '건강보조식품');
+                        }
+                    } else {
+                        // 이벤트, 게시판 등 상품 이외 카테고리 처리
+                        items = nonProductData[category] || [];
+                    }
+
+                    if (items.length === 0) {
+                        panelGrid.innerHTML = `<p style="text-align:center; color:#777;">표시할 내용이 없습니다.</p>`;
+                    } else {
+                        items.forEach(item => {
+                            const itemType = category.startsWith('products') ? 'product' : item.type;
+                            panelGrid.insertAdjacentHTML('beforeend', createDetailCard(item, itemType));
+                        });
+                    }
+                    panel.classList.add('active'); // 패널 화면에 표시
+                }
+            }
+            
+            // 상세 패널에 표시할 카드 HTML 생성 (상품, 이벤트, 게시글 타입별로 구분)
+            function createDetailCard(item, type) {
+                if (type === 'product') {
+                    return `
+                        <div class="detail-panel-card">
+                            <div class="detail-panel-info">
+                                <p class="meta-info">${item.brand}</p>
+                                <h4>${item.title}</h4>
+                                <p class="description">${item.description}</p>
+                                <p class="price">${parseInt(item.price).toLocaleString()}원</p>
+                                <a href="wealthy.html?id=${item.id}" class="link">보러 가기</a>
+                            </div>
+                        </div>`;
+                } else if (type === 'event') {
+                    return `
+                        <div class="detail-panel-card">
+                            <div class="detail-panel-info">
+                                <h4>${item.title}</h4>
+                                <p class="meta-info">${item.date}</p>
+                                <p class="description">${item.description}</p>
+                            </div>
+                        </div>`;
+                } else if (type === 'post') {
+                    return `
+                        <div class="detail-panel-card">
+                            <div class="detail-panel-info">
+                                <h4>${item.title}</h4>
+                                <p class="meta-info">작성자: ${item.author}</p>
+                                <p class="description">${item.description}</p>
+                            </div>
+                        </div>`;
+                }
+                return '';
+            }
+
+            // 검색 기능 초기화: 검색 결과 패널 닫기 버튼 설정 및 패널 외부 클릭 처리
+            function initSearch() {
+                const searchPanel = document.getElementById('search-results-panel');
+                const closeBtn = document.getElementById('search-results-close-btn');
+                closeBtn.addEventListener('click', closeSearchResults);
+                searchPanel.addEventListener('click', (e) => {
+                    if (e.target === searchPanel) closeSearchResults();
+                });
+            }
+            
+            // 검색 폼 제출 핸들러: 입력값으로 검색 수행
+            function handleSearch(event) {
+                event.preventDefault();
+                const searchTerm = document.getElementById('search-input').value.trim();
+                console.log('Search term entered:', searchTerm);
+                if (searchTerm) showSearchResults(searchTerm);
+            }
+
+            // 검색 결과 표시: 검색어에 해당하는 상품 필터링 후 결과 패널에 표시
+            function showSearchResults(term) {
+                const panel = document.getElementById('search-results-panel');
+                const titleEl = document.getElementById('search-results-title');
+                const gridEl = document.getElementById('search-results-grid');
+
+                titleEl.innerHTML = `<span class="search-term">${term}</span> 검색 결과`;
+                gridEl.innerHTML = '';
+                
+                // 검색어를 소문자로 변환하여 상품의 여러 필드에서 포함 여부 검사
+                const results = allProducts.filter(p => 
+                    p.title.toLowerCase().includes(term.toLowerCase()) ||
+                    p.brand.toLowerCase().includes(term.toLowerCase()) ||
+                    p.part.toLowerCase().includes(term.toLowerCase()) ||
+                    p.category.toLowerCase().includes(term.toLowerCase()) ||
+                    p.description.toLowerCase().includes(term.toLowerCase())
+                );
+                console.log(`Found ${results.length} results for term: '${term}'`);
+
+                if (results.length > 0) {
+                    results.forEach(item => {
+                        gridEl.insertAdjacentHTML('beforeend', createProductCard(item));
+                    });
+                } else {
+                    gridEl.innerHTML = `<p style="color:#777; grid-column: 1 / -1; text-align: center;">'${term}'에 대한 검색 결과가 없습니다.</p>`;
+                }
+                panel.classList.add('active'); // 검색 결과 패널 표시
+            }
+
+            // 검색 결과 아이템 카드 HTML 생성
+            function createProductCard(item) {
+                return `
+                    <div class="product-card" onclick="goToProductDetail('${item.id}')" style="cursor: pointer;">
+                        <div class="product-card-info">
+                            <div class="product-header">
+                                <p class="brand">${item.brand || '브랜드명 없음'}</p>
+                                <h3 class="product-title">${item.title || '상품명 없음'}</h3>
+                            </div>
+                            <p class="description">${item.description || '설명 없음'}</p>
+                            <div class="product-footer">
+                                <p class="price">${parseInt(item.price).toLocaleString()}원</p>
+                                <div class="product-card-actions">
+                                    <button class="product-card-btn" onclick="event.stopPropagation(); goToProductDetail('${item.id}')">
+                                        상세보기
+                                    </button>
+                                    <button class="product-card-btn secondary" onclick="event.stopPropagation(); addToWishlist('${item.id}')">
+                                        찜하기
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+            
+            // 상품 상세 페이지로 이동
+            function goToProductDetail(productId) {
+                window.location.href = `wealthy.html?id=${productId}`;
+            }
+            
+            // 찜목록에 추가
+            function addToWishlist(productId) {
+                if (!isLoggedIn) {
+                    alert('로그인 후 이용해주세요.');
+                    openLoginModal();
+                    return;
+                }
+                
+                // 찜목록 저장 (localStorage 사용)
+                let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+                if (!wishlist.includes(productId)) {
+                    wishlist.push(productId);
+                    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+                    alert('찜목록에 추가되었습니다.');
+                } else {
+                    alert('이미 찜목록에 있는 상품입니다.');
+                }
+            }
+
+            // 검색 결과 패널 닫기
+            function closeSearchResults() {
+                document.getElementById('search-results-panel').classList.remove('active');
+            }
+
+            // 전역 키보드 이벤트: Esc 키로 여러 패널 닫기
+            document.addEventListener('keydown', e => { 
+                if (e.key === 'Escape') {
+                    closeRecommendations();
+                    closeSearchResults();
+                    document.getElementById('detail-panel').classList.remove('active');
+                    // 모달도 ESC로 닫기
+                    document.querySelectorAll('.modal-overlay').forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                }
+            });
+
+            /* HTML 파일 끝에 <script> 태그로 추가 */
+            let chatbotOpen = false;
+            let currentProducts = [];
+
+            const chatbotData = {
+                // 신체 부위별 응답 패턴
+                bodyParts: {
+                    "머리": {
+                        keywords: ["머리", "두피", "탈모", "모발"],
+                        response: "머리와 두피 건강 관리법…",
+                        products: ["breo-Scalp3", "LG-pralel-medi-hair"]
+                    }
+                    // ... 8개 신체 부위 데이터
+                }
+            };
+        </script>
+        <div id="chatbot-container" class="chatbot-container">
+            <!-- 챗봇 UI 코드 -->
+        </div>
+        <div class="chatbot-float-btn" onclick="openChatbot()">
+            <span>💬</span>
+            <div class="pulse-ring"></div>
+        </div>
+    
+    <script src="visitor-counter.js"></script>
+    <!-- ========== AI 챗봇 추가 (기존 UI 변경 없음) ========== -->
+    <!-- 챗봇 플로팅 버튼 -->
+    <div class="ai-chatbot-float-btn" onclick="openAIChatbot()">
+        <span>💬</span>
+        <div class="ai-chatbot-pulse-ring"></div>
+    </div>
+
+    <!-- 챗봇 컨테이너 -->
+    <div id="ai-chatbot-container" class="ai-chatbot-container">
+        <div class="ai-chatbot-header">
+            <h3> 건강 상담 AI</h3>
+            <button class="ai-chatbot-close" onclick="closeAIChatbot()">×</button>
+        </div>
+
+        <div class="ai-chatbot-messages" id="ai-chatbot-messages">
+            <div class="ai-bot-message">
+                <div class="ai-message-avatar">🤖</div>
+                <div class="ai-message-content">
+                    안녕하세요! 건강 상담 AI입니다.<br>
+                    어떤 신체 부위나 건강 문제에 대해 궁금하신가요?
+                </div>
+            </div>
+        </div>
+
+        <div class="ai-chatbot-quick-buttons">
+            <button class="ai-quick-btn" onclick="sendAIQuickMessage('어깨 통증')">어깨 통증</button>
+            <button class="ai-quick-btn" onclick="sendAIQuickMessage('무릎 관리')">무릎 관리</button>
+            <button class="ai-quick-btn" onclick="sendAIQuickMessage('목 결림')">목 결림</button>
+            <button class="ai-quick-btn" onclick="sendAIQuickMessage('건강관리')">건강관리</button>
+        </div>
+
+        <div class="ai-chatbot-input">
+            <input type="text" id="ai-chatbot-input" placeholder="건강 관련 질문을 입력하세요..." onkeypress="handleAIChatbotEnter(event)">
+            <button class="ai-send-btn" onclick="sendAIMessage()">전송</button>
+        </div>
+    </div>
+
+    <script>
+        // ========== AI 챗봇 전용 JavaScript (기존 코드와 충돌 방지) ========== 
+
+        // 전역 변수
+        let aiChatbotOpen = false;
+        let aiCurrentProducts = [];
+
+        // 챗봇 데이터 및 응답 패턴
+        const aiChatbotData = {
+            greetings: [
+                "안녕하세요! 건강 상담 AI입니다. 어떤 도움이 필요하신가요?",
+                "반갑습니다! 건강과 관련된 질문이 있으시면 언제든 말씀해주세요.",
+                "안녕하세요! 신체 부위별 맞춤 건강 조언을 도와드릴게요."
+            ],
+            bodyParts: {
+                "머리": {
+                    keywords: ["머리", "두피", "탈모", "모발", "비듬", "헤어", "대머리"],
+                    response: "머리와 두피 건강이 걱정되시는군요! 다음과 같은 관리법을 추천드립니다:\n\n🔸 규칙적인 두피 마사지\n🔸 균형잡힌 영양소 섭취 (비오틴, 단백질)\n🔸 스트레스 관리\n🔸 충분한 수면\n\n관련 상품도 함께 추천해드릴게요!",
+                    products: ["breo-Scalp3", "LG-pralel-medi-hair", "mega-dos-B7", "vitamin-B5"]
+                },
+                "어깨": {
+                    keywords: ["어깨", "목", "승모근", "어깨결림", "목결림", "어깨통증"],
+                    response: "어깨와 목 부위의 긴장과 결림이 있으시군요. 다음 관리법을 시도해보세요:\n\n🔸 정기적인 스트레칭\n🔸 올바른 자세 유지\n🔸 온열 찜질\n🔸 적절한 베개 사용\n\n효과적인 상품들을 추천해드릴게요!",
+                    products: ["HV-F311", "mini-shoulder-bodyfriend", "MSM-GLUCOSAMIN", "joint-doctor"]
+                },
+                "가슴": {
+                    keywords: ["가슴", "흉부", "폐", "호흡", "심장", "면역", "가슴통증"],
+                    response: "흉부와 면역력 관리에 관심이 있으시군요! 건강한 생활습관을 추천드립니다:\n\n🔸 규칙적인 유산소 운동\n🔸 깊은 호흡 연습\n🔸 금연과 적절한 음주\n🔸 비타민 C 섭취\n\n관련 건강 상품을 확인해보세요!",
+                    products: ["welstone-hotpack", "HMB-150", "hongsam", "vitaminC 1000"]
+                },
+                "복부": {
+                    keywords: ["복부", "배", "소화", "장", "간", "복근", "다이어트", "배통증"],
+                    response: "복부 건강과 소화기능 개선에 도움이 되는 방법들입니다:\n\n🔸 규칙적인 식사\n🔸 충분한 수분 섭취\n🔸 프로바이오틱스 섭취\n🔸 복부 마사지\n\n복부 건강 상품들을 살펴보세요!",
+                    products: ["real EMS belt", "belly_hotpack", "healthy-liver", "lactofit"]
+                },
+                "손": {
+                    keywords: ["손", "손목", "손가락", "관절", "저림", "터널증후군", "손통증"],
+                    response: "손과 손목 건강 관리법을 알려드릴게요:\n\n🔸 정기적인 손목 스트레칭\n🔸 반복 작업 시 휴식\n🔸 올바른 작업 자세\n🔸 온열 요법\n\n손 건강 상품도 함께 확인해보세요!",
+                    products: ["pulio-hand-gun", "doctorwell-hand-gun", "omega3_dday"]
+                },
+                "허벅지": {
+                    keywords: ["허벅지", "대퇴", "근육", "운동", "마사지", "혈액순환", "허벅지통증"],
+                    response: "허벅지 근육 관리와 혈액순환 개선 방법입니다:\n\n🔸 정기적인 스쿼트 운동\n🔸 마사지 및 폼롤링\n🔸 충분한 단백질 섭취\n🔸 온열 요법\n\n허벅지 관리 상품을 추천드려요!",
+                    products: ["KF-G50", "massager-chair", "arginine", "protein-powder"]
+                },
+                "무릎": {
+                    keywords: ["무릎", "관절", "연골", "슬관절", "관절염", "통증", "무릎통증"],
+                    response: "무릎 관절 건강 관리법을 안내해드릴게요:\n\n🔸 적정 체중 유지\n🔸 관절에 무리가 적은 운동\n🔸 관절 보조제 섭취\n🔸 온열 치료\n\n무릎 건강 상품들을 확인해보세요!",
+                    products: ["curery-knee-massager", "myflo-knee-massager", "kondroitin"]
+                },
+                "발": {
+                    keywords: ["발", "발목", "족저", "발가락", "피로", "혈액순환", "발통증"],
+                    response: "발과 발목 건강 관리 방법을 알려드릴게요:\n\n🔸 편안한 신발 착용\n🔸 정기적인 발 마사지\n🔸 족욕과 온열 요법\n🔸 발가락 운동\n\n발 건강 관리 상품을 추천드려요!",
+                    products: ["bonum-foot-massager", "hubidic-foot-massager", "magnesium", "vitaminB complex"]
+                }
+            },
+
+            generalHealth: {
+                keywords: ["건강", "관리", "운동", "다이어트", "영양", "비타민", "건강관리"],
+                response: "전반적인 건강 관리에 대해 문의하셨군요! 건강한 생활을 위한 기본 원칙을 알려드릴게요:\n\n🔸 규칙적인 운동 (주 3-5회)\n🔸 균형잡힌 식단\n🔸 충분한 수면 (7-8시간)\n🔸 스트레스 관리\n🔸 정기적인 건강검진\n\n맞춤형 상품 추천도 가능합니다!"
+            },
+
+            defaultResponses: [
+                "죄송하지만 해당 질문에 대한 정확한 답변을 드리기 어렵습니다. 좀 더 구체적으로 어떤 부위나 증상에 대해 궁금하신지 말씀해 주시겠어요?",
+                "건강과 관련된 구체적인 질문을 해주시면 더 정확한 답변을 드릴 수 있습니다. 예를 들어 '어깨 통증', '무릎 관리' 등으로 말씀해 주세요. 답변이 마음에 들지않으시다면 대표자 준희에게 연락주세요",
+                "어떤 신체 부위나 건강 문제에 대해 궁금하신가요? 더 자세히 알려주시면 맞춤형 조언을 드릴게요!"
+            ]
+        };
+
+        // 챗봇 열기/닫기 함수
+        function openAIChatbot() {
+            const container = document.getElementById('ai-chatbot-container');
+            const floatBtn = document.querySelector('.ai-chatbot-float-btn');
+
+            container.classList.add('ai-active');
+            floatBtn.style.display = 'none';
+            aiChatbotOpen = true;
+        }
+
+        function closeAIChatbot() {
+            const container = document.getElementById('ai-chatbot-container');
+            const floatBtn = document.querySelector('.ai-chatbot-float-btn');
+
+            container.classList.remove('ai-active');
+            floatBtn.style.display = 'flex';
+            aiChatbotOpen = false;
+        }
+
+        // 메시지 전송 함수
+        function sendAIMessage() {
+            const input = document.getElementById('ai-chatbot-input');
+            const message = input.value.trim();
+
+            if (message === '') return;
+
+            addAIUserMessage(message);
+            input.value = '';
+
+            // 버튼 비활성화
+            const sendBtn = document.querySelector('.ai-send-btn');
+            sendBtn.disabled = true;
+
+            // 타이핑 인디케이터 표시
+            showAITypingIndicator();
+
+            // 1-2초 후 AI 응답
+            setTimeout(() => {
+                hideAITypingIndicator();
+                const response = generateAIResponse(message);
+                addAIBotMessage(response.text);
+
+                // 상품 추천이 있는 경우
+                if (response.products && response.products.length > 0) {
+                    setTimeout(() => {
+                        showAIProductRecommendations(response.products);
+                    }, 800);
+                }
+
+                sendBtn.disabled = false;
+            }, Math.random() * 1000 + 1200); // 1.2-2.2초 랜덤 지연
+        }
+
+        // 빠른 메시지 전송
+        function sendAIQuickMessage(message) {
+            const input = document.getElementById('ai-chatbot-input');
+            input.value = message;
+            sendAIMessage();
+        }
+
+        // 엔터키 처리
+        function handleAIChatbotEnter(event) {
+            if (event.key === 'Enter') {
+                sendAIMessage();
+            }
+        }
+
+        // 사용자 메시지 추가
+        function addAIUserMessage(message) {
+            const messagesContainer = document.getElementById('ai-chatbot-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'ai-user-message';
+            messageDiv.innerHTML = `
+                <div class="ai-message-avatar">👤</div>
+                <div class="ai-message-content">${message}</div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            scrollAIToBottom();
+        }
+
+        // 봇 메시지 추가
+        function addAIBotMessage(message) {
+            const messagesContainer = document.getElementById('ai-chatbot-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'ai-bot-message';
+            messageDiv.innerHTML = `
+                <div class="ai-message-avatar">🤖</div>
+                <div class="ai-message-content">${message.replace(/\n/g, '<br>')}<
+/div>
+            `;
+            messagesContainer.appendChild(messageDiv);
+            scrollAIToBottom();
+        }
+
+        // 타이핑 인디케이터 표시/숨기기
+        function showAITypingIndicator() {
+            const messagesContainer = document.getElementById('ai-chatbot-messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'ai-bot-message ai-typing-message';
+            typingDiv.innerHTML = `
+                <div class="ai-message-avatar">🤖</div>
+                <div class="ai-typing-indicator">
+                    <div class="ai-typing-dot"></div>
+                    <div class="ai-typing-dot"></div>
+                    <div class="ai-typing-dot"></div>
+                </div>
+            `;
+            messagesContainer.appendChild(typingDiv);
+            scrollAIToBottom();
+        }
+
+        function hideAITypingIndicator() {
+            const typingMessage = document.querySelector('.ai-typing-message');
+            if (typingMessage) {
+                typingMessage.remove();
+            }
+        }
+
+        // 스크롤을 맨 아래로
+        function scrollAIToBottom() {
+            const messagesContainer = document.getElementById('ai-chatbot-messages');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // AI 응답 생성 (핵심 로직)
+        function generateAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+
+            // 1. 신체 부위별 키워드 매칭
+            for (const [part, data] of Object.entries(aiChatbotData.bodyParts)) {
+                for (const keyword of data.keywords) {
+                    if (message.includes(keyword)) {
+                        return {
+                            text: data.response,
+                            products: data.products
+                        };
+                    }
+                }
+            }
+
+            // 2. 일반 건강 키워드 매칭
+            for (const keyword of aiChatbotData.generalHealth.keywords) {
+                if (message.includes(keyword)) {
+                    return {
+                        text: aiChatbotData.generalHealth.response,
+                        products: []
+                    };
+                }
+            }
+
+            // 3. 인사말 패턴
+            const greetingPatterns = ['안녕', '반갑', '처음', '안녕하세요', 'hi', 'hello', '헬로'];
+            if (greetingPatterns.some(pattern => message.includes(pattern))) {
+                return {
+                    text: aiChatbotData.greetings[Math.floor(Math.random() * aiChatbotData.greetings.length)],
+                    products: []
+                };
+            }
+
+            // 4. 기본 응답
+            return {
+                text: aiChatbotData.defaultResponses[Math.floor(Math.random() * aiChatbotData.defaultResponses.length)],
+                products: []
+            };
+        }
+
+        // 상품 추천 표시
+        function showAIProductRecommendations(productIds) {
+            const recommendedProducts = aiCurrentProducts.filter(product => 
+                productIds.includes(product.id)
+            );
+
+            if (recommendedProducts.length === 0) return;
+
+            const messagesContainer = document.getElementById('ai-chatbot-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'ai-bot-message';
+
+            let productsHtml = '<div class="ai-message-avatar">🤖</div><div class="ai-message-content">📦 추천 상품들을 확인해보세요:';
+
+            recommendedProducts.forEach(product => {
+                const price = parseInt(product.price).toLocaleString();
+                productsHtml += `
+                    <div class="ai-product-card">
+                        <div class="ai-product-info">
+                            <img src="${product.image}" alt="${product.title}" class="ai-product-img" onerror="this.style.display='none'">
+                            <div class="ai-product-details">
+                                <h5>${product.title}</h5>
+                                <p>${product.description}</p>
+                                <p class="ai-product-price">${price}원</p>
+                                <a href="${product.link}" class="ai-product-link" target="_blank">구매하기</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            productsHtml += '</div>';
+            messageDiv.innerHTML = productsHtml;
+            messagesContainer.appendChild(messageDiv);
+            scrollAIToBottom();
+        }
+
+        // 상품 데이터 로드
+        async function loadAIProductsData() {
+            try {
+                const response = await fetch('products.json');
+                aiCurrentProducts = await response.json();
+                console.log('AI 챗봇용 상품 데이터 로드 완료:', aiCurrentProducts.length, '개');
+            } catch (error) {
+                console.error('상품 데이터 로드 실패:', error);
+                aiCurrentProducts = []; // 빈 배열로 초기화
+                alert("AI 챗봇 상품 데이터를 불러오는 데 실패했습니다. 파일 경로와 JSON 형식을 확인해주세요.");
+            }
+        }
+
+        // ==================== 자유게시판 관련 함수들 ====================
+        
+        // 자유게시판 표시
+        function showFreeBoard() {
+            // 현재 열린 패널들 숨기기
+            hideAllPanels();
+            
+            const boardPanel = document.getElementById('board-panel');
+            const overlay = document.querySelector('.overlay');
+            
+            // 패널 표시
+            boardPanel.style.display = 'block';
+            overlay.classList.add('active');
+            
+            // 게시글 목록 로드
+            loadBoardPosts();
+            
+            // 뒤로 가기 버튼 이벤트
+            const backBtn = document.getElementById('board-panel-back-btn');
+            backBtn.onclick = () => {
+                boardPanel.style.display = 'none';
+                overlay.classList.remove('active');
+            };
+        }
+        
+        // 게시글 목록 로드
+        async function loadBoardPosts() {
+            try {
+                const response = await fetch('/api/posts');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayBoardPosts(data.posts);
+                } else {
+                    console.error('게시글 로드 실패:', data.message);
+                    alert('게시글을 불러오는데 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('게시글 로드 오류:', error);
+                alert('게시글을 불러오는데 실패했습니다.');
+            }
+        }
+        
+        // 게시글 목록 표시
+        function displayBoardPosts(posts) {
+            const boardList = document.getElementById('board-list');
+            
+            if (posts.length === 0) {
+                boardList.innerHTML = '<div class="no-posts">등록된 게시글이 없습니다.</div>';
+                return;
+            }
+            
+            const postsHtml = posts.map(post => `
+                <div class="board-item" onclick="viewPost('${post.id}')">
+                    <div class="board-item-header">
+                        <h4 class="board-item-title">${post.title}</h4>
+                        <div class="board-item-meta">
+                            <span class="board-item-author">${post.author}</span>
+                            <span class="board-item-date">${formatDate(post.createdAt)}</span>
+                            <span class="board-item-views">조회 ${post.views || 0}</span>
+                        </div>
+                    </div>
+                    <div class="board-item-content">${post.content.length > 100 ? post.content.substring(0, 100) + '...' : post.content}</div>
+                </div>
+            `).join('');
+            
+            boardList.innerHTML = postsHtml;
+        }
+        
+        // 날짜 형식 변환
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = now - date;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) {
+                return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+            } else if (diffDays < 30) {
+                return `${diffDays}일 전`;
+            } else {
+                return date.toLocaleDateString('ko-KR');
+            }
+        }
+        
+        // 게시글 상세보기
+        async function viewPost(postId) {
+            try {
+                const response = await fetch(`/api/posts/${postId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showPostDetail(data.post);
+                } else {
+                    alert('게시글을 불러오는데 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('게시글 상세 조회 오류:', error);
+                alert('게시글을 불러오는데 실패했습니다.');
+            }
+        }
+        
+        // 게시글 상세 표시
+        function showPostDetail(post) {
+            const postDetailHtml = `
+                <div class="post-detail">
+                    <div class="post-detail-header">
+                        <button class="post-back-btn" onclick="loadBoardPosts()">← 목록으로</button>
+                        <div class="post-actions">
+                            ${currentUser && currentUser.id === post.authorId ? 
+                                `<button class="post-delete-btn" onclick="deletePost('${post.id}')">삭제</button>` : ''
+                            }
+                        </div>
+                    </div>
+                    <div class="post-detail-content">
+                        <h2 class="post-detail-title">${post.title}</h2>
+                        <div class="post-detail-meta">
+                            <span class="post-detail-author">${post.author}</span>
+                            <span class="post-detail-date">${formatDate(post.createdAt)}</span>
+                            <span class="post-detail-views">조회 ${post.views}</span>
+                        </div>
+                        <div class="post-detail-text">${post.content.replace(/\n/g, '<br>')}</div>
+                    </div>
+                </div>
+            `;
+            
+            const boardList = document.getElementById('board-list');
+            boardList.innerHTML = postDetailHtml;
+        }
+        
+        // 글쓰기 모달 열기
+        function openWritePostModal() {
+            if (!currentUser) {
+                alert('로그인 후 글을 작성할 수 있습니다.');
+                openLoginModal();
+                return;
+            }
+            
+            const modal = document.getElementById('write-post-modal');
+            modal.style.display = 'block';
+            
+            // 폼 초기화
+            document.getElementById('write-post-form').reset();
+        }
+        
+        // 글쓰기 처리
+        async function handleWritePost(event) {
+            event.preventDefault();
+            
+            if (!currentUser) {
+                alert('로그인이 필요합니다.');
+                return;
+            }
+            
+            const title = document.getElementById('post-title').value.trim();
+            const content = document.getElementById('post-content').value.trim();
+            
+            if (!title || !content) {
+                alert('제목과 내용을 모두 입력해주세요.');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/posts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title,
+                        content,
+                        author: currentUser.name
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('게시글이 작성되었습니다.');
+                    closeModal('write-post-modal');
+                    loadBoardPosts(); // 게시글 목록 새로고침
+                } else {
+                    alert(data.message || '게시글 작성에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('게시글 작성 오류:', error);
+                alert('게시글 작성 중 오류가 발생했습니다.');
+            }
+        }
+        
+        // 게시글 삭제
+        async function deletePost(postId) {
+            if (!currentUser) {
+                alert('로그인이 필요합니다.');
+                return;
+            }
+            
+            if (!confirm('정말 삭제하시겠습니까?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/posts/${postId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        authorId: currentUser.id
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('게시글이 삭제되었습니다.');
+                    loadBoardPosts(); // 게시글 목록 새로고침
+                } else {
+                    alert(data.message || '게시글 삭제에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('게시글 삭제 오류:', error);
+                alert('게시글 삭제 중 오류가 발생했습니다.');
+            }
+        }
+
+        // AI 챗봇 초기화
+        function initAIChatbot() {
+            loadAIProductsData();
+
+            console.log('AI 챗봇이 초기화되었습니다.');
+
+            // 3초 후 플로팅 버튼에 주목 효과
+            setTimeout(() => {
+                const floatBtn = document.querySelector('.ai-chatbot-float-btn');
+                if (floatBtn && !aiChatbotOpen) {
+                    floatBtn.style.animation = 'ai-chatbot-pulse 1.5s infinite';
+                    setTimeout(() => {
+                        floatBtn.style.animation = '';
+                    }, 4000);
+                }
+            }, 3000);
+        }
+
+        // 페이지 로드 시 AI 챗봇 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            initAIChatbot();
+        });
+
+        // 이미 페이지가 로드된 경우를 위한 즉시 실행
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAIChatbot);
+        } else {
+            initAIChatbot();
+        }
+    </script>
+</body>
+</html>

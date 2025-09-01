@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthyWealthy - 상품 구매</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* 기존 CSS + 로그인 관련 스타일 추가 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Noto Sans KR', sans-serif; line-height: 1.7; color: #2c3e50; background: #f8f9fa; min-height: 100vh; }
+.container { max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+.header { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(20px); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; box-shadow: 0 1px 40px rgba(102, 126, 234, 0.12); border-bottom: 1px solid rgba(102, 126, 234, 0.08); }
+.header .container { display: flex; justify-content: space-between; align-items: center; height: 80px; gap: 1rem; }
+.logo { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.logo-img { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.logo-text { font-size: 1.75rem; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+/* 로그인 관련 스타일 */
+.auth-section { display: flex; align-items: center; position: relative; }
+.auth-menu { display: flex; align-items: center; gap: 0.5rem; }
+.auth-btn { padding: 0.6rem 1.2rem; border: none; border-radius: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; }
+.login-btn { background: transparent; color: #667eea; border: 2px solid #667eea; }
+.login-btn:hover { background: #667eea; color: white; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); }
+.signup-btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+.signup-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); }
+.user-info { display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1rem; background: rgba(102, 126, 234, 0.1); border-radius: 12px; font-weight: 600; color: #667eea; }
+.user-menu-btn { background: none; border: none; color: #667eea; cursor: pointer; font-size: 0.8rem; transition: transform 0.3s ease; }
+.user-menu-btn:hover { transform: rotate(180deg); }
+.user-dropdown { position: absolute; top: 100%; right: 0; margin-top: 0.5rem; background: white; border-radius: 12px; box-shadow: 0 8px 30px rgba(102, 126, 234, 0.2); padding: 0.5rem 0; min-width: 160px; z-index: 1001; display: none; }
+.user-dropdown a { display: block; padding: 0.8rem 1.2rem; color: #333; text-decoration: none; transition: background 0.2s ease; }
+.user-dropdown a:hover { background: rgba(102, 126, 234, 0.1); color: #667eea; }
+
+/* 모달 스타일 */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 2000; backdrop-filter: blur(5px); }
+.modal-content { background: white; border-radius: 20px; width: 90%; max-width: 450px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); transform: scale(0.9); transition: transform 0.3s ease; }
+.modal-overlay.active .modal-content, .modal-overlay[style*="flex"] .modal-content { transform: scale(1); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; padding: 2rem 2rem 1rem; border-bottom: 1px solid #eee; }
+.modal-header h2 { font-size: 1.8rem; font-weight: 700; color: #333; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.modal-close { background: none; border: none; font-size: 2rem; color: #999; cursor: pointer; transition: color 0.3s ease; }
+.modal-close:hover { color: #333; transform: rotate(90deg); }
+.modal-body { padding: 2rem; }
+.form-group { margin-bottom: 1.5rem; }
+.form-group label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333; }
+.form-group input { width: 100%; padding: 0.875rem 1rem; border: 2px solid #e9ecef; border-radius: 12px; font-size: 1rem; transition: all 0.3s ease; font-family: 'Noto Sans KR', sans-serif; }
+.form-group input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+.submit-btn { width: 100%; padding: 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; margin-bottom: 1.5rem; }
+.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); }
+
+.breadcrumb { font-size: 0.9rem; color: #666; }
+.breadcrumb a { color: #667eea; text-decoration: none; }
+.breadcrumb span { color: #999; }
+.main { margin-top: 80px; padding: 2rem 0; }
+.product-page { background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(102, 126, 234, 0.1); overflow: hidden; margin: 2rem 0; }
+.product-container { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; padding: 3rem; align-items: start; }
+.product-images, .product-info { opacity: 0; transition: opacity 0.5s ease-in-out; }
+.product-images.loaded, .product-info.loaded { opacity: 1; }
+.main-image-container { position: relative; border-radius: 16px; overflow: hidden; background: #f8f9fa; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1); aspect-ratio: 1; }
+.main-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+.main-image:hover { transform: scale(1.05); }
+.thumbnail-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.8rem; margin-top: 1rem; }
+.thumbnail { aspect-ratio: 1; border-radius: 8px; overflow: hidden; cursor: pointer; border: 2px solid transparent; background: #f8f9fa; }
+.thumbnail:hover, .thumbnail.active { border-color: #667eea; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); }
+.thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+.product-info { display: flex; flex-direction: column; gap: 1.2rem; padding: 1rem 0; }
+.product-title { font-size: 2rem; font-weight: 700; line-height: 1.3; }
+.product-subtitle { font-size: 1.1rem; color: #666; }
+.product-price { display: flex; flex-direction: column; gap: 0.5rem; }
+.current-price { font-size: 2.2rem; font-weight: 800; color: #667eea; }
+.product-options, .total-price, .action-buttons { display: flex; flex-direction: column; gap: 1.5rem; }
+.option-group { display: flex; flex-direction: column; gap: 0.8rem; }
+.option-label { font-size: 1rem; font-weight: 600; }
+.option-select { padding: 1rem; border: 2px solid #e9ecef; border-radius: 12px; font-size: 1rem; }
+.quantity-control { display: flex; align-items: center; gap: 1rem; }
+.quantity-input { display: flex; align-items: center; border: 2px solid #e9ecef; border-radius: 12px; overflow: hidden; }
+.quantity-btn { background: #f8f9fa; border: none; padding: 1rem; cursor: pointer; font-size: 1.2rem; min-width: 50px; }
+.quantity-btn:hover { background: #667eea; color: white; }
+.quantity-value { padding: 1rem; min-width: 60px; text-align: center; font-weight: 600; border: none; font-size: 1rem; }
+.total-price { flex-direction: row; justify-content: space-between; align-items: center; padding: 1.5rem; background: #f8f9fa; border-radius: 12px; }
+.total-label { font-size: 1.2rem; font-weight: 600; }
+.total-amount { font-size: 1.8rem; font-weight: 800; color: #667eea; }
+.action-buttons { flex-direction: row; gap: 1rem; margin-top: 1rem; }
+.btn { flex: 1; padding: 1.2rem; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; }
+.btn-cart { background: white; color: #667eea; border: 2px solid #667eea; }
+.btn-buy { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; text-align: center; }
+.loading, .error { min-height: 60vh; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: 500; }
+
+/* 찜하기 버튼 스타일 추가 */
+.wishlist-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.wishlist-btn:hover {
+    background: white;
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+.wishlist-btn.active {
+    color: #e74c3c;
+    background: #fff0f0;
+}
+
+@media (max-width: 768px) { 
+    .product-container { grid-template-columns: 1fr; }
+    .auth-menu { gap: 0.3rem; }
+    .auth-btn { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
+    .modal-content { width: 95%; margin: 1rem; }
+}
+</style>
+</head>
+<body>
+    <div id="visitor-counter">
+        현재 접속자 수: <span id="visitor-count"></span>명
+    </div>
+    <header class="header">
+        <div class="container">
+            <a href="healthy.html" class="logo">
+                <img src="./image/34.png" alt="HealthyWealthy" class="logo-img">
+                <span class="logo-text">HealthyWealthy</span>
+            </a>
+            <div id="breadcrumb" class="breadcrumb"></div>
+            
+            <!-- 로그인 영역 추가 -->
+            <div class="auth-section">
+                <div id="logged-out-menu" class="auth-menu">
+                    <button class="auth-btn login-btn" onclick="openLoginModal()">로그인</button>
+                    <button class="auth-btn signup-btn" onclick="openSignupModal()">회원가입</button>
+                </div>
+                <div id="logged-in-menu" class="auth-menu" style="display: none;">
+                    <div class="user-info">
+                        <span id="user-name">사용자</span>님
+                        <button class="user-menu-btn" onclick="toggleUserMenu()">▼</button>
+                    </div>
+                    <div class="user-dropdown" id="user-dropdown">
+                        <a href="#" onclick="showMyPage()">마이페이지</a>
+                        <a href="#" onclick="showOrderHistory()">주문내역</a>
+                        <a href="#" onclick="showWishlist()">찜목록</a>
+                        <a href="#" onclick="logout()">로그아웃</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 로그인 모달 -->
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>로그인</h2>
+                <button class="modal-close" onclick="closeModal('login-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="login-email">이메일</label>
+                        <input type="email" id="login-email" required placeholder="이메일을 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">비밀번호</label>
+                        <input type="password" id="login-password" required placeholder="비밀번호를 입력하세요">
+                    </div>
+                    <button type="submit" class="submit-btn">로그인</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 회원가입 모달 -->
+    <div class="modal-overlay" id="signup-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>회원가입</h2>
+                <button class="modal-close" onclick="closeModal('signup-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="signup-form" onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label for="signup-name">이름</label>
+                        <input type="text" id="signup-name" required placeholder="이름을 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">이메일</label>
+                        <input type="email" id="signup-email" required placeholder="이메일을 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">비밀번호</label>
+                        <input type="password" id="signup-password" required placeholder="비밀번호를 입력하세요" minlength="8">
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password-confirm">비밀번호 확인</label>
+                        <input type="password" id="signup-password-confirm" required placeholder="비밀번호를 다시 입력하세요">
+                    </div>
+                    <button type="submit" class="submit-btn">회원가입</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <main class="main">
+        <div class="container">
+            <div id="product-page" class="product-page">
+                <div class="loading">상품 정보를 불러오는 중입니다...</div>
+            </div>
+        </div>
+    </main>
+
+<script>
+    // ========== Visitor Counter Logic ==========
+    let visitorCount = Math.floor(Math.random() * 100000) + 100000000; // Start with 100,000,000 to 100,100,000
+
+    function updateVisitorCount() {
+        const increment = Math.floor(Math.random() * 100) + 1; // Random increment between 1 and 100
+        visitorCount += increment;
+        document.getElementById('visitor-count').textContent = visitorCount.toLocaleString();
+    }
+
+    // Initial update
+    updateVisitorCount();
+
+    // Update every second
+    setInterval(updateVisitorCount, 1000);
+
+    // ===========================================
+
+    // 가격 계산을 위한 전역 변수
+    let currentPrice = 0;
+    let shippingCost = 0;
+    let currentProduct = null;
+
+    // 로그인 관련 변수들
+    let currentUser = null;
+    let isLoggedIn = false;
+
+    // 1. 페이지가 로드되면 URL에서 상품 ID를 확인하고 데이터 로딩 시작
+    document.addEventListener('DOMContentLoaded', async () => {
+        // 로그인 상태 확인
+        checkLoginStatus();
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        if (!productId) {
+            showError("잘못된 상품 ID입니다.");
+            return;
+        }
+
+        try {
+            const response = await fetch('products.json');
+            if (!response.ok) throw new Error('데이터 파일을 찾을 수 없습니다.');
+            
+            const allProducts = await response.json();
+            const product = allProducts.find(p => p.id === productId);
+
+            if (product) {
+                currentProduct = product;
+                document.title = `HealthyWealthy - ${product.title}`;
+                populateProductPage(product);
+            } else {
+                showError("상품을 찾을 수 없습니다.");
+            }
+        } catch (error) {
+            console.error("오류 발생:", error);
+            showError("상품 정보를 불러오는 데 실패했습니다.");
+        }
+    });
+
+    // ================== 로그인 기능 함수들 ==================
+
+    // 로그인 상태 확인
+    function checkLoginStatus() {
+        const userData = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        const rememberMe = localStorage.getItem('rememberLogin') === 'true';
+        
+        if (userData && rememberMe) {
+            loginUser(userData);
+        }
+    }
+
+    // 로그인 처리
+    function loginUser(userData) {
+        currentUser = userData;
+        isLoggedIn = true;
+        
+        // UI 업데이트
+        document.getElementById('logged-out-menu').style.display = 'none';
+        document.getElementById('logged-in-menu').style.display = 'block';
+        document.getElementById('user-name').textContent = userData.name || userData.email.split('@')[0];
+        
+        // 사용자 데이터 저장
+        localStorage.setItem('currentUser', JSON.stringify(userData));
+        
+        console.log('로그인 성공:', userData);
+    }
+
+    // 로그아웃 처리
+    function logout() {
+        currentUser = null;
+        isLoggedIn = false;
+        
+        // UI 업데이트
+        document.getElementById('logged-out-menu').style.display = 'block';
+        document.getElementById('logged-in-menu').style.display = 'none';
+        
+        // 사용자 드롭다운 닫기
+        document.getElementById('user-dropdown').style.display = 'none';
+        
+        // 로컬 스토리지 정리
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('rememberLogin');
+        
+        alert('로그아웃되었습니다.');
+    }
+
+    // 모달 열기/닫기
+    function openLoginModal() {
+        document.getElementById('login-modal').style.display = 'flex';
+    }
+
+    function openSignupModal() {
+        document.getElementById('signup-modal').style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // 사용자 메뉴 토글
+    function toggleUserMenu() {
+        const dropdown = document.getElementById('user-dropdown');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // 로그인 폼 처리
+    function handleLogin(event) {
+        event.preventDefault();
+        
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        
+        // 실제로는 서버에 인증 요청을 보내야 하지만, 데모용으로 간단히 처리
+        if (email && password) {
+            // 기존 회원 데이터에서 찾기 (실제로는 서버 인증)
+            const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                loginUser(user);
+                localStorage.setItem('rememberLogin', 'true');
+                closeModal('login-modal');
+                alert(`환영합니다, ${user.name}님!`);
+            } else {
+                alert('이메일 또는 비밀번호가 올바르지 않습니다.');
+            }
+        }
+    }
+
+    // 회원가입 폼 처리
+    function handleSignup(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById('signup-name').value;
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        const passwordConfirm = document.getElementById('signup-password-confirm').value;
+        
+        // 유효성 검사
+        if (password !== passwordConfirm) {
+            alert('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+        
+        // 기존 회원 중복 체크
+        const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+        if (users.find(u => u.email === email)) {
+            alert('이미 가입된 이메일입니다.');
+            return;
+        }
+        
+        // 새 회원 정보 생성
+        const newUser = {
+            id: Date.now().toString(),
+            name,
+            email,
+            password,
+            joinDate: new Date().toISOString()
+        };
+        
+        // 회원 데이터 저장
+        users.push(newUser);
+        localStorage.setItem('registeredUsers', JSON.stringify(users));
+        
+        closeModal('signup-modal');
+        alert('회원가입이 완료되었습니다! 로그인해주세요.');
+        
+        // 회원가입 후 로그인 모달 열기
+        setTimeout(() => {
+            openLoginModal();
+            document.getElementById('login-email').value = email;
+        }, 100);
+    }
+
+    // 마이페이지, 주문내역, 찜목록 등
+    function showMyPage() {
+        if (!isLoggedIn) {
+            openLoginModal();
+            return;
+        }
+        alert('마이페이지 기능은 준비 중입니다.');
+        document.getElementById('user-dropdown').style.display = 'none';
+    }
+
+    function showOrderHistory() {
+        if (!isLoggedIn) {
+            openLoginModal();
+            return;
+        }
+        alert('주문내역 기능은 준비 중입니다.');
+        document.getElementById('user-dropdown').style.display = 'none';
+    }
+
+    function showWishlist() {
+        if (!isLoggedIn) {
+            openLoginModal();
+            return;
+        }
+        alert('찜목록 기능은 준비 중입니다.');
+        document.getElementById('user-dropdown').style.display = 'none';
+    }
+
+    // ================== 상품 상세 기능들 ==================
+
+    // 2. 찾은 상품 정보로 페이지 내용을 채우는 함수 (수정본)
+    function populateProductPage(product) {
+        const productPage = document.getElementById('product-page');
+        
+        currentPrice = parseInt(product.price);
+
+        const breadcrumb = document.getElementById('breadcrumb');
+        breadcrumb.innerHTML = `
+            <a href="healthy.html">홈</a> <span>&gt;</span>
+            <a href="#">${product.category}</a> <span>&gt;</span>
+            <span>${product.title}</span>`;
+        
+        // --- 색상 옵션 동적 생성 로직 ---
+        let colorOptionGroupHTML = '';
+        if (product.colors && product.colors.length > 0) {
+            const colorOptions = product.colors.map(color => `<option value="${color}">${color}</option>`).join('');
+
+            colorOptionGroupHTML = `
+                <div class="option-group">
+                    <label class="option-label">색상 선택</label>
+                    <select class="option-select" id="colorOption">
+                        <option value="">색상을 선택해주세요</option>
+                        ${colorOptions}
+                    </select>
+                </div>`;
+        }
+
+        productPage.innerHTML = `
+            <div class="product-container">
+                <div class="product-images loaded">
+                    <div class="main-image-container">
+                        <img src="${product.image}" alt="${product.title}" class="main-image" id="mainImage">
+                        <button class="wishlist-btn" id="wishlist-btn" onclick="toggleWishlist()">
+                            ♡
+                        </button>
+                    </div>
+                    <div class="thumbnail-grid">
+                         <div class="thumbnail active">
+                            <img src="${product.image}" alt="상품 이미지 1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-info loaded">
+                    <div>
+                        <p style="color: #555; font-weight: 600;">${product.brand}</p>
+                        <h1 class="product-title">${product.title}</h1>
+                        <p class="product-subtitle">${product.description}</p>
+                    </div>
+
+                    <div class="product-price">
+                        <div class="current-price">${currentPrice.toLocaleString()}원</div>
+                    </div>
+
+                    <div class="product-options">
+                        ${colorOptionGroupHTML}
+                        <div class="option-group">
+                            <label class="option-label">배송 옵션</label>
+                            <select class="option-select" id="shippingOption">
+                                <option value="standard">일반 배송 (무료)</option>
+                                <option value="express">익일 배송 (+3,000원)</option>
+                            </select>
+                        </div>
+                        <div class="option-group">
+                            <label class="option-label">수량</label>
+                            <div class="quantity-input">
+                                <button class="quantity-btn" onclick="changeQuantity(-1)">-</button>
+                                <input type="number" class="quantity-value" id="quantity" value="1" min="1" readonly>
+                                <button class="quantity-btn" onclick="changeQuantity(1)">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="total-price">
+                        <span class="total-label">총 결제금액</span>
+                        <span class="total-amount" id="totalPrice"></span>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-cart" onclick="addToCart()">🛒 장바구니</button>
+                        <a href="${product.link}" target="_blank" class="btn btn-buy">💳 바로구매</a>
+                    </div>
+                </div>
+            </div>`;
+
+        setupEventListeners();
+        updateTotalPrice();
+        updateWishlistButton();
+    }
+
+    // 찜하기 기능
+    function toggleWishlist() {
+        if (!isLoggedIn) {
+            alert('로그인이 필요한 서비스입니다.');
+            openLoginModal();
+            return;
+        }
+
+        if (!currentProduct) return;
+
+        const wishlistKey = `wishlist_${currentUser.id}`;
+        let wishlist = JSON.parse(localStorage.getItem(wishlistKey) || '[]');
+        const productIndex = wishlist.findIndex(item => item.id === currentProduct.id);
+
+        if (productIndex > -1) {
+            // 찜 해제
+            wishlist.splice(productIndex, 1);
+            alert('찜목록에서 제거되었습니다.');
+        } else {
+            // 찜 추가
+            wishlist.push({
+                id: currentProduct.id,
+                title: currentProduct.title,
+                price: currentProduct.price,
+                image: currentProduct.image,
+                addedAt: new Date().toISOString()
+            });
+            alert('찜목록에 추가되었습니다.');
+        }
+
+        localStorage.setItem(wishlistKey, JSON.stringify(wishlist));
+        updateWishlistButton();
+    }
+
+    // 찜하기 버튼 상태 업데이트
+    function updateWishlistButton() {
+        const wishlistBtn = document.getElementById('wishlist-btn');
+        if (!wishlistBtn || !isLoggedIn || !currentProduct) return;
+
+        const wishlistKey = `wishlist_${currentUser.id}`;
+        const wishlist = JSON.parse(localStorage.getItem(wishlistKey) || '[]');
+        const isWishlisted = wishlist.some(item => item.id === currentProduct.id);
+
+        wishlistBtn.textContent = isWishlisted ? '♥' : '♡';
+        wishlistBtn.classList.toggle('active', isWishlisted);
+    }
+
+    // 3. 기존의 기능들을 위한 함수들
+    function changeQuantity(change) {
+        const quantityInput = document.getElementById('quantity');
+        let currentQuantity = parseInt(quantityInput.value);
+        let newQuantity = currentQuantity + change;
+        
+        if (newQuantity < 1) newQuantity = 1;
+        if (newQuantity > 99) newQuantity = 99;
+        
+        quantityInput.value = newQuantity;
+        updateTotalPrice();
+    }
+
+    function updateTotalPrice() {
+        const quantity = parseInt(document.getElementById('quantity').value);
+        const shippingOption = document.getElementById('shippingOption').value;
+        
+        shippingCost = (shippingOption === 'express') ? 3000 : 0;
+        
+        const totalPrice = (currentPrice * quantity) + shippingCost;
+        document.getElementById('totalPrice').textContent = totalPrice.toLocaleString() + '원';
+    }
+
+    function setupEventListeners() {
+        // 배송 옵션이 변경될 때마다 총 가격을 다시 계산
+        document.getElementById('shippingOption').addEventListener('change', updateTotalPrice);
+    }
+    
+    function addToCart() {
+        if (!isLoggedIn) {
+            alert('로그인이 필요한 서비스입니다.');
+            openLoginModal();
+            return;
+        }
+
+        const colorOption = document.getElementById('colorOption');
+        if (colorOption && !colorOption.value) {
+            alert('색상을 선택해주세요!');
+            return;
+        }
+
+        // 장바구니에 상품 추가 로직
+        const cartKey = `cart_${currentUser.id}`;
+        let cart = JSON.parse(localStorage.getItem(cartKey) || '[]');
+        
+        const cartItem = {
+            id: currentProduct.id,
+            title: currentProduct.title,
+            price: currentProduct.price,
+            image: currentProduct.image,
+            quantity: parseInt(document.getElementById('quantity').value),
+            color: colorOption ? colorOption.value : null,
+            shipping: document.getElementById('shippingOption').value,
+            addedAt: new Date().toISOString()
+        };
+
+        // 같은 상품, 같은 옵션이면 수량만 증가
+        const existingIndex = cart.findIndex(item => 
+            item.id === cartItem.id && 
+            item.color === cartItem.color &&
+            item.shipping === cartItem.shipping
+        );
+
+        if (existingIndex > -1) {
+            cart[existingIndex].quantity += cartItem.quantity;
+        } else {
+            cart.push(cartItem);
+        }
+
+        localStorage.setItem(cartKey, JSON.stringify(cart));
+        alert('장바구니에 상품이 추가되었습니다!');
+    }
+
+    function showError(message) {
+        document.getElementById('product-page').innerHTML = `<div class="error">${message}</div>`;
+    }
+
+    // 모달 외부 클릭시 닫기
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('modal-overlay')) {
+            event.target.style.display = 'none';
+        }
+        
+        // 사용자 드롭다운 외부 클릭시 닫기
+        if (!event.target.closest('.auth-section')) {
+            document.getElementById('user-dropdown').style.display = 'none';
+        }
+    });
+
+    // ESC 키로 모달 닫기
+    document.addEventListener('keydown', e => { 
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.style.display = 'none';
+            });
+        }
+    });
+</script>
+</body>
+</html>
